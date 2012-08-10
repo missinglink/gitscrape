@@ -10,8 +10,6 @@ io = require('socket.io').listen server
 io.set('log level', false)
 server.listen 3000
 
-KEY_LOCK_USER = 'lock:user:%s'
-
 # Express Routes
 app.use app.router
 app.use '/', express.static __dirname + '/../public'
@@ -44,11 +42,11 @@ worker = () ->
     if username?
     
       # Skip locked records
-      lockKey = util.format KEY_LOCK_USER, username
-      redis.get lockKey, (err,lock) ->
+      redis.get util.format('lock:user:%s',username), (err,lock) ->
         if lock? && lock == 'lock'
         
           # Put user back in the queue
+          console.log '[Record locked - putting job back in queue]'
           redis.sadd 'queue:user:update', username
           
         else
@@ -57,19 +55,22 @@ worker = () ->
           user = client.user username
           user.info (err,data) ->
 
-            console.log err
-            console.log data
+            if err?
+            
+              # Put user back in the queue
+              console.log '[Service error - putting job back in queue]'
+              redis.sadd 'queue:user:update', username
 
             # Save user
-            if data?.login
+            else if data?.login
               redis.hmset util.format('user:%s',data.login), data, (err,reply) ->
               
                 console.log util.format '[user saved]: %s', data.login
                 redis.sadd 'users', data.login
 
                 # Lock the user from update for 1 day
-                redis.set lockKey, 'lock'
-                redis.expire lockKey, 86400
+                redis.set util.format('lock:user:%s',data.login), 'lock'
+                redis.expire util.format('lock:user:%s',data.login), 86400
 
               # Update followers & Queue follower users for download
               user.followers (err,users) ->
@@ -81,12 +82,8 @@ worker = () ->
                   if user?.login
                     redis.sadd followersKey, user.login
                     redis.sadd 'queue:user:update', user.login
-            
-            # An error occurred
-            #else
-            
-              # Put user back in the queue
-              #redis.sadd 'queue:user:update', username
+                    
+            else console.log '[Service returned invalid user record]'
                      
                 
   process.nextTick worker
