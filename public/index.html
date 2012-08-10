@@ -28,9 +28,7 @@
                 socket.on 'client.users.search', (users) ->
                     console.log users
                     
-                socket.emit 'server.user.search', 'mi'
-                
-                socket.emit 'server.users.add', 'torvalds'
+                socket.emit 'server.user.search', 'fabpot'
                 
                 
                 update = () ->
