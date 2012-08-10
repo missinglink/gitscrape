@@ -48,7 +48,7 @@ worker = () ->
         if lock? && lock == 'lock'
         
           # Put user back in the queue
-          console.log '[Record locked - putting job back in queue]'
+          console.log '[Record locked] - putting job back in queue'
           redis.sadd 'queue:user:update', username
           
         else
@@ -67,12 +67,16 @@ worker = () ->
             else if data?.login
               redis.hmset util.format('user:%s',data.login), data, (err,reply) ->
               
+                console.log '[User Saved]: %s', data.login
+              
                 console.log util.format '[user saved]: %s', data.login
                 redis.sadd 'users', data.login
 
                 # Lock the user from update for 1 day
                 redis.set util.format('lock:user:%s',data.login), 'lock'
                 redis.expire util.format('lock:user:%s',data.login), 86400
+                
+                io.sockets.emit 'users.info', data
 
               # Update followers & Queue follower users for download
               user.followers (err,users) ->

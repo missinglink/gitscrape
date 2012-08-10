@@ -11,12 +11,12 @@
         <script type="text/coffeescript">
             
             $ ->
-                socket = io.connect location.host, port : 3000
 
-                socket.emit 'users.add', 'missinglink'
-                socket.emit 'users.add', 'fabpot'
+                socket = io.connect document.domain
+
+                socket.emit 'users.add', 'abba'
                 
-                socket.emit 'users.index'
+#                socket.emit 'users.index'
                 
                 socket.on 'users.index', (index) ->
                     $('ul#users').empty()
