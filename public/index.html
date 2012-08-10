@@ -14,43 +14,42 @@
 
                 socket = io.connect document.domain
 
-                socket.emit 'users.add', 'abba'
-                
-#                socket.emit 'users.index'
-                
-                socket.on 'users.index', (index) ->
-                    $('ul#users').empty()
-                    for username in index
-                        socket.emit 'users.info', username
+                socket.on 'client.users.total', (count) ->
+                    $('h1.users span').html count
                     
-                socket.on 'users.info', (user) ->
-                    if user?.login
+                socket.on 'client.queue.total', (count) ->
+                    $('h1.queue span').html count
                     
-                        li = $('<li>')
-                        
-                        a = $('<a>')
-                        a.attr 'href', 'https://github.com/'+user.login
-                        
-                        img = $('<img>')
-                        img.attr 'src', 'https://secure.gravatar.com/avatar/'+user.gravatar_id+'?s=20'
-                        img.attr 'title', user.login
-                        
-                        p = $('<p>')
-                        p.html user.login
-                        
-                        em = $('<em>')
-                        em.html user.location
-                        
-                        li.append a
-                        a.append img
-                        #li.append p
-                        #li.append em
-                        
-                        $('ul#users').append li
+                socket.on 'client.rate.limit', (rate) ->
+                    $('h1.rate span.limit').html rate.rate.limit
+                    $('h1.rate span.remaining').html rate.rate.remaining
+                
+                
+                socket.on 'client.users.search', (users) ->
+                    console.log users
+                    
+                socket.emit 'server.user.search', 'mi'
+                
+                socket.emit 'server.users.add', 'torvalds'
+                
+                
+                update = () ->
+                    socket.emit 'server.users.total'
+                    socket.emit 'server.queue.total'
+                    socket.emit 'server.rate.limit'
+                    
+                update()
+                
+                setInterval update, 1000
 
         </script>
     </head>
     <body>
+    
+        <h1 class="users">Users Indexed: <span>0</span></h1>
+        <h1 class="queue">Users in Queue: <span>0</span></h1>
+        <h1 class="rate">Rate Limit: <span class="remaining">0</span> / <span class="limit">0</span></h1>
+    
         <ul id="users"></ul>
     </body>
 </html>
