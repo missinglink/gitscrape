@@ -67,4 +67,4 @@ worker = () ->
 
 #  process.nextTick worker
 
-setInterval worker, 10
+setInterval worker, 500
