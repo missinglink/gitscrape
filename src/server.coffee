@@ -10,6 +10,8 @@ io = require('socket.io').listen server
 io.set('log level', false)
 server.listen 3000
 
+KEY_LOCK_USER = 'lock:user:%s'
+
 # Express Routes
 app.use app.router
 app.use '/', express.static __dirname + '/../public'
@@ -22,10 +24,10 @@ redis.on 'error', (err) -> console.log err
 io.sockets.on 'connection', (socket) ->
 
   socket.on 'users.add', (username) ->
-    redis.sadd 'queue.users.update', username
+    redis.sadd 'queue:user:update', username
     
   socket.on 'users.index', () ->
-    redis.smembers 'users.index', (err,index) ->
+    redis.smembers 'users', (err,index) ->
       io.sockets.emit 'users.index', index
 
   socket.on 'users.info', (username) ->
@@ -38,38 +40,53 @@ client = github.client()
 # Worker
 worker = () ->
 
-  redis.spop 'queue.users.update', (err,username) ->
+  redis.spop 'queue:user:update', (err,username) ->
     if username?
     
       # Skip locked records
-      lockKey = util.format 'user:%s:lock', username
+      lockKey = util.format KEY_LOCK_USER, username
       redis.get lockKey, (err,lock) ->
-        if !lock? || lock != 'lock'
+        if lock? && lock == 'lock'
+        
+          # Put user back in the queue
+          redis.sadd 'queue:user:update', username
+          
+        else
 
           # Query user info
           user = client.user username
           user.info (err,data) ->
 
+            console.log err
+
             # Save user
             if data?.login
               redis.hmset util.format('user:%s',data.login), data, (err,reply) ->
+              
                 console.log util.format '[user saved]: %s', data.login
-                redis.sadd 'users.index', data.login
+                redis.sadd 'users', data.login
 
                 # Lock the user from update for 1 day
                 redis.set lockKey, 'lock'
                 redis.expire lockKey, 86400
 
-            # Update followers & Queue follower users for download
-            user.followers (err,users) ->
-              
-              followersKey = util.format 'user:%s:followers', data.login
-              redis.del followersKey
-              
-              for user in users
-                if user?.login
-                  redis.sadd followersKey, user.login
-                  redis.sadd 'queue.users.update', user.login
+              # Update followers & Queue follower users for download
+              user.followers (err,users) ->
+
+                followersKey = util.format 'user:%s:followers', data.login
+                redis.del followersKey
+
+                for user in users
+                  if user?.login
+                    redis.sadd followersKey, user.login
+                    redis.sadd 'queue:user:update', user.login
+            
+            # An error occurred
+            #else
+            
+              # Put user back in the queue
+              #redis.sadd 'queue:user:update', username
+                     
                 
   process.nextTick worker
 
