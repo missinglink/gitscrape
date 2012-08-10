@@ -41,7 +41,7 @@ worker = () ->
   redis.spop 'queue:user:update', (err,username) ->
     if username?
     
-      console.log util.format '[Processing Job]: %s' username
+      console.log util.format '[Processing Job]: %s', username
     
       # Skip locked records
       redis.get util.format('lock:user:%s',username), (err,lock) ->
