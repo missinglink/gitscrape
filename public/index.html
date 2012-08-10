@@ -10,8 +10,10 @@
         
         <script type="text/coffeescript">
             
-            #5568
-            #:53
+            #local f12:06 s
+            
+            #s5568-f8069
+            #s11:53-f12:19:45
             
             $ ->
 
@@ -27,6 +29,7 @@
                 
                     if rate?.message
                         $('h1.rate span.limit').html rate.message
+                        $('h1.rate span.remaining').html ''
                         
                     else if rate?.rate
                         $('h1.rate span.limit').html rate.rate.limit

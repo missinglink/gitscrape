@@ -46,7 +46,7 @@ worker = () ->
 
                 # Lock the user from update for 1 day
                 redis.set util.format('lock:user:%s',data.login), 'lock'
-                redis.expire util.format('lock:user:%s',data.login), 86400
+                redis.expire util.format('lock:user:%s',data.login), 172800 # lock for 48 hours
 
               # Update followers & Queue follower users for download
               user.followers (err,users) ->
