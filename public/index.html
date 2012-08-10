@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="http://coffeescript.org/extras/coffee-script.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        
+        <script type="text/coffeescript">
+            
+            $ ->
+                socket = io.connect 'http://localhost', port : 3000
+
+                socket.emit 'users.add', 'stof'
+                
+                socket.emit 'users.index'
+                
+                socket.on 'users.index', (index) ->
+                    $('ul#users').empty()
+                    for username in index
+                        socket.emit 'users.info', username
+                    
+                socket.on 'users.info', (user) ->
+                    if user?.login
+                    
+                        li = $('<li>')
+                        
+                        a = $('<a>')
+                        a.attr 'href', 'https://github.com/'+user.login
+                        
+                        img = $('<img>')
+                        img.attr 'src', 'https://secure.gravatar.com/avatar/'+user.gravatar_id+'?s=20'
+                        img.attr 'title', user.login
+                        
+                        p = $('<p>')
+                        p.html user.login
+                        
+                        em = $('<em>')
+                        em.html user.location
+                        
+                        li.append a
+                        a.append img
+                        #li.append p
+                        #li.append em
+                        
+                        $('ul#users').append li
+
+        </script>
+    </head>
+    <body>
+        <ul id="users"></ul>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "github-crawler",
+  "preferGlobal": "true",
+  "version": "0.0.1",
+  "dependencies" : {
+    "coffee-script" : "*",
+    "express" : "*",
+    "hiredis" : "*",
+    "redis" : "*",
+    "jitter" : "*",
+    "socket.io" : "*",
+    "request" : "*",
+    "octonode" : "*",
+    "reddish-proxy" : "*"
+  }
+}

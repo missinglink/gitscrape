@@ -1,0 +1,11 @@
+ul#users {
+    padding: 0;
+    margin: 0;
+}
+
+ul#users li {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2px 2px;
+    display: inline;
+}
