@@ -21,14 +21,18 @@
                     $('h1.queue span').html count
                     
                 socket.on 'client.rate.limit', (rate) ->
-                    $('h1.rate span.limit').html rate.rate.limit
-                    $('h1.rate span.remaining').html rate.rate.remaining
                 
+                    if rate?.message
+                        $('h1.rate span.limit').html rate.message
+                        
+                    else if rate?.rate
+                        $('h1.rate span.limit').html rate.rate.limit
+                        $('h1.rate span.remaining').html rate.rate.remaining
                 
                 socket.on 'client.users.search', (users) ->
                     console.log users
                     
-                socket.emit 'server.user.search', 'stof'
+                socket.emit 'server.user.search', 'ghost'
                 
                 
                 update = () ->
@@ -44,9 +48,9 @@
     </head>
     <body>
     
-        <h1 class="users">Users Indexed: <span>0</span></h1>
-        <h1 class="queue">Users in Queue: <span>0</span></h1>
-        <h1 class="rate">Rate Limit: <span class="remaining">0</span> / <span class="limit">0</span></h1>
+        <h1 class="users">Users Indexed: <span></span></h1>
+        <h1 class="queue">Users in Queue: <span></span></h1>
+        <h1 class="rate">Rate Limit: <span class="remaining"></span> / <span class="limit"></span></h1>
     
         <ul id="users"></ul>
     </body>
