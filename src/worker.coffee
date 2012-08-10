@@ -53,12 +53,13 @@ worker = () ->
 
                 followersKey = util.format 'user:%s:followers', data.login
                 redis.del followersKey
-
-                for user in users
-                  if user?.login
-                    redis.sadd followersKey, user.login
-                    redis.sadd 'queue:user:update', user.login
-                    console.log '[Added follower]: %s', user.login
+                
+                if users?
+                  for user in users
+                    if user?.login
+                      redis.sadd followersKey, user.login
+                      redis.sadd 'queue:user:update', user.login
+                      console.log '[Added follower]: %s', user.login
                     
             else console.log '[Service returned invalid user record]'
 
