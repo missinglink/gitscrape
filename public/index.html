@@ -26,9 +26,6 @@
                 socket.on 'client.queue.total', (count) ->
                     $('span.queue').html count
                     
-                socket.on 'client.queue.newentry', (count) ->
-                    $('span.newentry').html count
-                    
                 socket.on 'client.rate.limit', (rate) ->
                 
                     if rate?.message
@@ -81,7 +78,6 @@
                     socket.emit 'server.users.total'
                     socket.emit 'server.queue.total'
                     socket.emit 'server.rate.limit'
-                    #socket.emit 'server.queue.newentry'
                     
                 update()
                 
@@ -93,7 +89,7 @@
     
         <table>
             <tr><th>Total Users</th><td><span class="users"></span></td></tr>
-            <tr><th>Queue</th><td><span class="queue"></span> ~<span class="newentry"></span></td></tr>
+            <tr><th>Queue</th><td><span class="queue"></span></td></tr>
             <tr><th>Rate Limit</th><td><span class="remaining"></span> / <span class="limit"></span></td></tr>
         </table>
         
