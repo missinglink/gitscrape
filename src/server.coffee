@@ -51,6 +51,10 @@ io.sockets.on 'connection', (socket) ->
     redis.scard 'queue:user:update', (err,count) ->
       io.sockets.emit 'client.queue.total', count
 
+  socket.on 'server.queue.newentry', () ->
+    redis.sdiff 'queue:user:update', 'users', (err,index) ->
+      io.sockets.emit 'client.queue.newentry', index.length
+
   socket.on 'server.rate.limit', () ->
     request 'https://api.github.com/rate_limit', (error, response, body) ->
       if body?

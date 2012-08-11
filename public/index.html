@@ -10,10 +10,10 @@
         
         <script type="text/coffeescript">
             
-            #local f12:06 s
+            #local f12:06 s12:45 
             
-            #s5568-f8069
-            #s11:53-f12:19:45
+            #s5568-f8069 s10570
+            #s11:53-f12:19:45 12:54:45-12:59:58
             
             $ ->
 
@@ -24,6 +24,9 @@
                     
                 socket.on 'client.queue.total', (count) ->
                     $('h1.queue span').html count
+                    
+                socket.on 'client.queue.newentry', (count) ->
+                    $('h1.new span').html count
                     
                 socket.on 'client.rate.limit', (rate) ->
                 
@@ -40,13 +43,14 @@
                     
                 socket.emit 'server.user.search', 'ghost'
                 
-                socket.emit 'server.users.add', 'ghost'
+                socket.emit 'server.users.add', 'symfony'
                 
                 
                 update = () ->
                     socket.emit 'server.users.total'
                     socket.emit 'server.queue.total'
                     socket.emit 'server.rate.limit'
+                    socket.emit 'server.queue.newentry'
                     
                 update()
                 
@@ -56,6 +60,7 @@
     </head>
     <body>
     
+        <h1 class="new">New Entries: <span></span></h1>
         <h1 class="users">Users Indexed: <span></span></h1>
         <h1 class="queue">Users in Queue: <span></span></h1>
         <h1 class="rate">Rate Limit: <span class="remaining"></span> / <span class="limit"></span></h1>
