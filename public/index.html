@@ -38,22 +38,12 @@
                         
                 socket.on 'client.user.search', (users) ->
 
-                    console.log users
+                    $('ul#userlist').empty()
                     if users?
-                    
-                        for user in users
-                        
-                            li = $('<li>').html user
-                            $('ul#userlist').append li
-  
-                
-#                socket.on 'client.users.search', (users) ->
-#                    console.log users
-#                    
-#                socket.emit 'server.user.search', 'ghost'
-#                
-#                socket.emit 'server.users.add', 'symfony'
+                        for user in users                        
+                            $('ul#userlist').append $('<li>').html(user)
 
+                # Inputs
 
                 $('input.newuser').click (event) ->
                 
@@ -63,25 +53,13 @@
                     
                     if username != ''
                         socket.emit 'server.users.add', username
-                    
                 
                 $('input#finduser').keyup () ->
                 
-                    $('ul#userlist').empty()
                     username = $('input#finduser').val()
                     
                     if username != ''
                         socket.emit 'server.user.search', username
-                    
-                
-                update = () ->
-                    socket.emit 'server.users.total'
-                    socket.emit 'server.queue.total'
-                    socket.emit 'server.rate.limit'
-                    
-                update()
-                
-                setInterval update, 1000
 
         </script>
     </head>

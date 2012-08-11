@@ -28,7 +28,7 @@ io.sockets.on 'connection', (socket) ->
     
   socket.on 'server.users.index', () ->
     redis.smembers 'users', (err,index) ->
-      io.sockets.emit 'client.users.index', index
+      socket.emit 'client.users.index', index
       
   socket.on 'server.user.search', (username) ->
     redis.smembers 'users', (err,index) ->
@@ -37,25 +37,23 @@ io.sockets.on 'connection', (socket) ->
         if user.indexOf(username) == 0
           found.push user
         
-      io.sockets.emit 'client.user.search', found
+      socket.emit 'client.user.search', found
 
   socket.on 'server.user.info', (username) ->
     redis.hgetall util.format('user:%s', username), (err,user) ->
-      io.sockets.emit 'client.user.info', user
-      
-  socket.on 'server.users.total', () ->
-    redis.scard 'users', (err,count) ->
-      io.sockets.emit 'client.users.total', count
-      
-  socket.on 'server.queue.total', () ->
-    redis.scard 'queue:user:update', (err,count) ->
-      io.sockets.emit 'client.queue.total', count
+      socket.emit 'client.user.info', user
+        
+# Send stats to clients
+stats = () ->
 
-  socket.on 'server.queue.newentry', () ->
-    redis.sdiff 'queue:user:update', 'users', (err,index) ->
-      io.sockets.emit 'client.queue.newentry', index.length
+  redis.scard 'users', (err,count) ->
+    io.sockets.emit 'client.users.total', count
 
-  socket.on 'server.rate.limit', () ->
-    request 'https://api.github.com/rate_limit', (error, response, body) ->
-      if body?
-        io.sockets.emit 'client.rate.limit', JSON.parse body
+  redis.scard 'queue:user:update', (err,count) ->
+    io.sockets.emit 'client.queue.total', count
+
+  request 'https://api.github.com/rate_limit', (error, response, body) ->
+    if body?
+      io.sockets.emit 'client.rate.limit', JSON.parse body
+
+setInterval stats, 500
