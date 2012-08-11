@@ -3,6 +3,7 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="basic.css" />
         <link rel="stylesheet" type="text/css" href="style.css" />
         <script src="http://code.jquery.com/jquery.min.js"></script>
         <script src="http://coffeescript.org/extras/coffee-script.js"></script>
@@ -20,31 +21,63 @@
                 socket = io.connect document.domain
 
                 socket.on 'client.users.total', (count) ->
-                    $('h1.users span').html count
+                    $('span.users').html count
                     
                 socket.on 'client.queue.total', (count) ->
-                    $('h1.queue span').html count
+                    $('span.queue').html count
                     
                 socket.on 'client.queue.newentry', (count) ->
-                    $('h1.new span').html count
+                    $('span.newentry').html count
                     
                 socket.on 'client.rate.limit', (rate) ->
                 
                     if rate?.message
-                        $('h1.rate span.limit').html rate.message
-                        $('h1.rate span.remaining').html ''
+                        $('span.limit').html rate.message
+                        $('span.remaining').html ''
                         
                     else if rate?.rate
-                        $('h1.rate span.limit').html rate.rate.limit
-                        $('h1.rate span.remaining').html rate.rate.remaining
-                
-                socket.on 'client.users.search', (users) ->
+                        $('span.limit').html rate.rate.limit
+                        $('span.remaining').html rate.rate.remaining
+                        
+                socket.on 'client.user.search', (users) ->
+
                     console.log users
+                    if users?
                     
-                socket.emit 'server.user.search', 'ghost'
+                        for user in users
+                        
+                            li = $('<li>').html user
+                            $('ul#userlist').append li
+  
                 
-                socket.emit 'server.users.add', 'symfony'
+#                socket.on 'client.users.search', (users) ->
+#                    console.log users
+#                    
+#                socket.emit 'server.user.search', 'ghost'
+#                
+#                socket.emit 'server.users.add', 'symfony'
+
+
+                $('a.newuser').click (event) ->
                 
+                    event.preventDefault()
+                
+                    username = $('input#newuser').val()
+                    
+                    if username != ''
+                        socket.emit 'server.users.add', username
+                    
+                
+                $('input#finduser').keyup (event) ->
+                
+                    event.preventDefault()
+                
+                    $('ul#userlist').empty()
+                    username = $('input#finduser').val()
+                    
+                    if username != ''
+                        socket.emit 'server.user.search', username
+                    
                 
                 update = () ->
                     socket.emit 'server.users.total'
@@ -60,11 +93,23 @@
     </head>
     <body>
     
-        <h1 class="new">New Entries: <span></span></h1>
-        <h1 class="users">Users Indexed: <span></span></h1>
-        <h1 class="queue">Users in Queue: <span></span></h1>
-        <h1 class="rate">Rate Limit: <span class="remaining"></span> / <span class="limit"></span></h1>
+        <table>
+            <tr><th>Total Users</th><td><span class="users"></span></td></tr>
+            <tr><th>Queue</th><td><span class="queue"></span> ~<span class="newentry"></span></td></tr>
+            <tr><th>Rate Limit</th><td><span class="remaining"></span> / <span class="limit"></span></td></tr>
+        </table>
+        
+        <input id="newuser" type="text" size="30" />
+        <a class="newuser" href="#">Add User</a>
+        
+        <br /><br />
+        
+        <input id="finduser" type="text" size="30" />
+        <a class="finduser" href="#">Find User</a>
+        
+        <ul id="userlist">
+                
+        </ul>
     
-        <ul id="users"></ul>
     </body>
 </html>

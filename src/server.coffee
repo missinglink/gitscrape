@@ -37,7 +37,7 @@ io.sockets.on 'connection', (socket) ->
         if user.indexOf(username) == 0
           found.push user
         
-      io.sockets.emit 'client.users.search', found
+      io.sockets.emit 'client.user.search', found
 
   socket.on 'server.user.info', (username) ->
     redis.hgetall util.format('user:%s', username), (err,user) ->

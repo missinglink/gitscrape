@@ -1,11 +1,14 @@
-ul#users {
-    padding: 0;
-    margin: 0;
+body {
+    padding:20px;
 }
 
-ul#users li {
-    list-style: none;
+ul#userlist {
+    margin: 20px 0 0 0;
     padding: 0;
-    margin: 0 0 2px 2px;
-    display: inline;
+}
+
+ul#userlist li {
+    margin: 0 0 0 0;
+    padding: 0;
+    list-style: none;
 }
