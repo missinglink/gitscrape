@@ -58,7 +58,7 @@
 #                socket.emit 'server.users.add', 'symfony'
 
 
-                $('a.newuser').click (event) ->
+                $('input.newuser').click (event) ->
                 
                     event.preventDefault()
                 
@@ -68,9 +68,7 @@
                         socket.emit 'server.users.add', username
                     
                 
-                $('input#finduser').keyup (event) ->
-                
-                    event.preventDefault()
+                $('input#finduser').keyup () ->
                 
                     $('ul#userlist').empty()
                     username = $('input#finduser').val()
@@ -99,13 +97,12 @@
             <tr><th>Rate Limit</th><td><span class="remaining"></span> / <span class="limit"></span></td></tr>
         </table>
         
-        <input id="newuser" type="text" size="30" />
-        <a class="newuser" href="#">Add User</a>
+        <input id="newuser" type="text" size="30" placeholder="add user" />
+        <input class="newuser" type="submit" />
         
         <br /><br />
         
-        <input id="finduser" type="text" size="30" />
-        <a class="finduser" href="#">Find User</a>
+        <input id="finduser" type="text" size="30" placeholder="search" />
         
         <ul id="userlist">
                 
