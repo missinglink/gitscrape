@@ -31,14 +31,15 @@ io.sockets.on 'connection', (socket) ->
       socket.emit 'client.users.index', index
       
   socket.on 'server.user.search', (username) ->
-    redis.smembers 'users', (err,index) ->
-      multi = redis.multi()
-      for member in index
-        if member.indexOf(username) == 0
-          multi.hgetall util.format('user:%s', member)
+    if username.length > 1
+      redis.smembers 'users', (err,index) ->
+        multi = redis.multi()
+        for member in index
+          if member.indexOf(username) == 0
+            multi.hgetall util.format('user:%s', member)
             
-      multi.exec (err,replies) =>
-        io.sockets.emit 'client.user.search', replies
+        multi.exec (err,replies) =>
+          io.sockets.emit 'client.user.search', replies
 
   socket.on 'server.user.info', (username) ->
     redis.hgetall util.format('user:%s', username), (err,user) ->

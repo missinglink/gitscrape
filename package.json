@@ -11,6 +11,7 @@
     "socket.io" : "*",
     "request" : "*",
     "octonode" : "*",
-    "reddish-proxy" : "*"
+    "reddish-proxy" : "*",
+    "forever" : "*"
   }
 }

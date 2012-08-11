@@ -89,7 +89,7 @@
                 
                     username = $('input#finduser').val()
                     
-                    if username != '' && username.length > 1
+                    if username != ''
                         socket.emit 'server.user.search', username
 
         </script>
