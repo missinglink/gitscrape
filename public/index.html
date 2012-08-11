@@ -7,7 +7,12 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
         <script src="http://code.jquery.com/jquery.min.js"></script>
         <script src="http://coffeescript.org/extras/coffee-script.js"></script>
+        <script src="https://raw.github.com/janl/mustache.js/master/mustache.js"></script>
         <script src="/socket.io/socket.io.js"></script>
+        
+        <style type="text/less">
+        
+        </style>
         
         <script type="text/coffeescript">
             
@@ -38,10 +43,36 @@
                         
                 socket.on 'client.user.search', (users) ->
 
+#                    console.log users
+
                     $('ul#userlist').empty()
                     if users?
-                        for user in users                        
-                            $('ul#userlist').append $('<li>').html(user)
+                        for user in users
+                            
+                            li = $('<li>')
+                            
+                            template = '<div class="img">'
+                            template += '<img src="https://secure.gravatar.com/avatar/{{gravatar_id}}?s=50" />'
+                            template += '</div>'
+                            li.append Mustache.render template, user
+                            
+                            template = '<div class="info">'
+                            template += '<a href="https://github.com/{{login}}">'
+                            template += '<h3>{{login}}</h3>'
+                            template += '</a>'
+                            template += '<p>{{location}}</p>'
+                            template += '</div>'
+                            li.append Mustache.render template, user
+                            
+                            template = '<div class="stats">'
+                            template += '<span class="followers">{{followers}}</span>'
+                            template += '<span class="following">{{following}}</span>'
+                            template += '<span class="gists">{{public_gists}}</span>'
+                            template += '<span class="repos">{{public_repos}}</span>'
+                            template += '</div>'
+                            li.append Mustache.render template, user
+                            
+                            $('ul#userlist').append li
 
                 # Inputs
 
@@ -58,7 +89,7 @@
                 
                     username = $('input#finduser').val()
                     
-                    if username != ''
+                    if username != '' && username.length > 1
                         socket.emit 'server.user.search', username
 
         </script>

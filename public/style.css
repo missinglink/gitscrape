@@ -8,7 +8,80 @@ ul#userlist {
 }
 
 ul#userlist li {
-    margin: 0 0 0 0;
-    padding: 0;
+    margin: 0 0 5px 0;
+    padding: 0 0 0 0;
     list-style: none;
+    
+    display: block;
+    border-bottom: dotted 1px #ddd;
+    
+    clear: both;
+}
+
+ul#userlist li div.img {
+    margin: 5px 0;
+    display: block;
+    float:left;
+}
+
+ul#userlist li div.img img {
+    border: solid 1px #ddd;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+ul#userlist li div.info {
+    margin-right: 30px;
+    float:left;
+}
+
+ul#userlist li div.info a {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    text-decoration: none;
+}
+
+ul#userlist li div.info a:hover {
+    text-decoration: underline;
+}
+
+ul#userlist li div.info a h3 {
+    margin: 0 0 0 0;
+    padding: 5px 0 0 0;
+    
+    color: darkblue;
+}
+
+ul#userlist li div.stats {
+    padding: 5px;
+    float:right;
+}
+
+ul#userlist li div.stats span {
+    margin: 0;
+    padding: 5px;
+    
+    margin-left: 5px;
+    font-size: 9px;
+    background-color: #efefef;
+    color: #111;
+    
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+ul#userlist li div.info p {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+input[type=text] {
+    border: solid 1px #ddd;
+    padding: 5px 5px;
+}
+
+input#finduser {
+    width:500px;
+    font-size: 20px;
 }

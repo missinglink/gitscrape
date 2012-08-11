@@ -32,12 +32,13 @@ io.sockets.on 'connection', (socket) ->
       
   socket.on 'server.user.search', (username) ->
     redis.smembers 'users', (err,index) ->
-      found = []
-      for user in index
-        if user.indexOf(username) == 0
-          found.push user
-        
-      socket.emit 'client.user.search', found
+      multi = redis.multi()
+      for member in index
+        if member.indexOf(username) == 0
+          multi.hgetall util.format('user:%s', member)
+            
+      multi.exec (err,replies) =>
+        io.sockets.emit 'client.user.search', replies
 
   socket.on 'server.user.info', (username) ->
     redis.hgetall util.format('user:%s', username), (err,user) ->
